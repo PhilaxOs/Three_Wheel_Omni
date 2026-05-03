@@ -55,12 +55,20 @@ public:
     // 下方转动电机
     Class_Motor_DJI_C620 Motor_Wheel[3];
 
-    void Init(float __Velocity_X_Max = 4.0f, float __Velocity_Y_Max = 4.0f, float __Omega_Max = 8.0f);
+    void Init(float __Velocity_X_Max = 3.0f, float __Velocity_Y_Max = 2.0f, float __Omega_Max = 6.0f);
 
     inline Enum_Chassis_Control_Type Get_Chassis_Control_Type();
     inline float Get_Velocity_X_Max();
     inline float Get_Velocity_Y_Max();
     inline float Get_Omega_Max();
+
+    inline float Get_Now_Velocity_X();
+    inline float Get_Now_Velocity_Y();
+    inline float Get_Now_Omega();
+
+    inline float Get_Target_Velocity_X();
+    inline float Get_Target_Velocity_Y();
+    inline float Get_Target_Omega();
 
     inline void Set_Chassis_Control_Type(Enum_Chassis_Control_Type __Chassis_Control_Type);
     inline void Set_Target_Velocity_X(float __Target_Velocity_X);
@@ -113,10 +121,10 @@ protected:
     void Self_Resolution();
 };
 
-const float WHEEL_TO_CORE_DISTANCE = 0.0f;
+const float WHEEL_TO_CORE_DISTANCE = 0.320f;
 
 // 轮子直径 单位m 待定
-const float WHEEL_DIAMETER = 0.0f;
+const float WHEEL_DIAMETER = 0.1f;
 
 // 线速度转角速度 rad/s
 const float VEL2RAD = 1.0f / (WHEEL_DIAMETER / 2.0f);
@@ -164,6 +172,51 @@ float Class_Omni_Chassis::Get_Velocity_Y_Max()
 float Class_Omni_Chassis::Get_Omega_Max()
 {
     return (Omega_Max);
+}
+
+float Class_Omni_Chassis::Get_Now_Velocity_X()
+{
+    return (Now_Velocity_X);
+}
+
+float Class_Omni_Chassis::Get_Now_Velocity_Y()
+{
+    return (Now_Velocity_Y);
+}
+
+float Class_Omni_Chassis::Get_Now_Omega()
+{
+    return (Now_Omega);
+}
+
+/**
+ * @brief 获取目标速度X
+ *
+ * @return float 目标速度X
+ */
+float Class_Omni_Chassis::Get_Target_Velocity_X()
+{
+    return (Target_Velocity_X);
+}
+
+/**
+ * @brief 获取目标速度Y
+ *
+ * @return float 目标速度Y
+ */
+float Class_Omni_Chassis::Get_Target_Velocity_Y()
+{
+    return (Target_Velocity_Y);
+}
+
+/**
+ * @brief 获取目标角速度
+ *
+ * @return float 目标角速度
+ */
+float Class_Omni_Chassis::Get_Target_Omega()
+{
+    return (Target_Omega);
 }
 
 /**

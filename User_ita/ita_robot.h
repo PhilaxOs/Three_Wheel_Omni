@@ -3,6 +3,7 @@
 
 #include "crt_chassis.h"
 #include "dvc_dr16.h"
+#include "dvc_nvidiaorin.h"
 
 /**
  * @brief DR16控制数据来源
@@ -27,19 +28,22 @@ enum Enum_Active_Controller
 {
     Controller_NONE = 0,
     Controller_DR16,
+    Controller_Orin,
 };
 
 class Class_Chariot
 {
 public:
     Class_DR16 DR16;
+    Class_Orin Orin;
     Class_Omni_Chassis Chassis;
-
+    
     void Init(float __Dead_Zone = 0);
     void TIM_Control_Callback();
     void TIM_Calculate_PeriodElapsedCallback();
     void TIM_Unline_Protect_PeriodElapsedCallback();
     void TIM_100ms_Alive_PeriodElapsedCallback();
+    void TIM_101ms_Alive_PeriodElapsedCallback();
 
     void Judge_DR16_Control_Type();
     void Judge_Active_Controller();
