@@ -21,9 +21,9 @@ void Class_Omni_Chassis::Init(float __Velocity_X_Max, float __Velocity_Y_Max, fl
 
     // 电机PID批量初始化
 
-    Motor_Wheel[0].PID_Omega.Init(5.0f, 0.1f, 0.0f, 0.0f, 50.0f, 2500.0f);
-    Motor_Wheel[1].PID_Omega.Init(5.0f, 0.1f, 0.0f, 0.0f, 50.0f, 2500.0f);
-    Motor_Wheel[2].PID_Omega.Init(5.0f, 0.1f, 0.0f, 0.0f, 50.0f, 2500.0f);
+    Motor_Wheel[0].PID_Omega.Init(5.0f, 0.0f, 0.01f, 0.0f, 50.0f, 2500.0f);
+    Motor_Wheel[1].PID_Omega.Init(5.0f, 0.0f, 0.01f, 0.0f, 50.0f, 2500.0f);
+    Motor_Wheel[2].PID_Omega.Init(5.0f, 0.0f, 0.01f, 0.0f, 50.0f, 2500.0f);
 
     // 轮向电机ID初始化
     Motor_Wheel[0].Init(&hfdcan1, Motor_DJI_ID_0x201);
@@ -70,9 +70,9 @@ void Class_Omni_Chassis::Kinematics_Inverse_Resolution()
 
 #ifdef SPEED_SLOPE
         // 速度换算，逆运动学分解
-        float motor1_temp_linear_vel = Slope_Velocity_X.Get_Out() + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
-        float motor2_temp_linear_vel = -Slope_Velocity_X.Get_Out() * 0.5f + Slope_Velocity_Y.Get_Out() * 0.5f * SQRT3 + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
-        float motor3_temp_linear_vel = -Slope_Velocity_X.Get_Out() * 0.5f - Slope_Velocity_Y.Get_Out() * 0.5f * SQRT3 + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+        float motor1_temp_linear_vel = Slope_Velocity_Y.Get_Out() + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+        float motor2_temp_linear_vel = -Slope_Velocity_X.Get_Out() * 0.5f * SQRT3 - Slope_Velocity_Y.Get_Out() * 0.5f + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+        float motor3_temp_linear_vel = Slope_Velocity_X.Get_Out() * 0.5f * SQRT3 - Slope_Velocity_Y.Get_Out() * 0.5f + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
 #else
         // 速度换算，逆运动学分解
         float motor1_temp_linear_vel = Target_Velocity_X + Target_Omega * WHEEL_TO_CORE_DISTANCE;
@@ -117,9 +117,9 @@ void Class_Omni_Chassis::Self_Resolution()
         W[i] = Motor_Wheel[i].Get_Now_Omega();
     }
 
-    temp_velocity_x_now = (W[0] - W[1] * 0.5f - W[2] * 0.5f) * RAD2VEl;
-    temp_velocity_y_now = (W[1] - W[2]) * RAD2VEl / SQRT3;
-    temp_omega_now = (W[0] + W[1] + W[2]) * RAD2VEl / (3.0f * WHEEL_TO_CORE_DISTANCE);
+    temp_velocity_x_now = (- W[1] * 0.5f * SQRT3 + W[2] * 0.5f) * WHEEL_DIAMETER / 2.0f;
+    temp_velocity_y_now = (W[0] - W[1] * 0.5f - W[2] * 0.5f * SQRT3) * WHEEL_DIAMETER / 2.0f;
+    temp_omega_now = (W[0] + W[1] + W[2]) * WHEEL_DIAMETER / (6.0f * WHEEL_TO_CORE_DISTANCE);
 
     Set_Now_Velocity_X(temp_velocity_x_now);
     Set_Now_Velocity_Y(temp_velocity_y_now);

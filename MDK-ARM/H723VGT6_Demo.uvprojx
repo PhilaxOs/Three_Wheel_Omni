@@ -649,6 +649,16 @@
               <FileType>5</FileType>
               <FilePath>..\User_dvc\dvc_motor_dji.h</FilePath>
             </File>
+            <File>
+              <FileName>dvc_nvidiaorin.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\User_dvc\dvc_nvidiaorin.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>dvc_nvidiaorin.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User_dvc\dvc_nvidiaorin.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
