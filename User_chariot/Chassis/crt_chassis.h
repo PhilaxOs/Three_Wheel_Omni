@@ -52,6 +52,15 @@ public:
     // 斜坡函数加减速角速度
     Class_Slope Slope_Omega;
 
+    // 底盘速度值PID
+    Class_PID PID_Velocity_X;
+
+    // 底盘速度方向PID
+    Class_PID PID_Velocity_Y;
+
+    // 底盘角速度PID
+    Class_PID PID_Omega;
+
     // 下方转动电机
     Class_Motor_DJI_C620 Motor_Wheel[3];
 
@@ -83,7 +92,7 @@ public:
 
     void TIM_Calculate_PeriodElapsedCallback(Enum_Sprint_Status __Sprint_Status);
     void TIM_100ms_Alive_PeriodElapsedCallback();
-    
+
 protected:
     // 速度X限制
     float Velocity_X_Max;
@@ -97,6 +106,9 @@ protected:
 
     // 转动电机目标值
     float Target_Wheel_Omega[3];
+
+    // 转动电机电流目标值
+    float Target_Wheel_Current[4];
 
     // 底盘控制方法
     Enum_Chassis_Control_Type Chassis_Control_Type = Chassis_Control_Type_DISABLE;
@@ -117,8 +129,34 @@ protected:
     // 运动学逆解算
     void Kinematics_Inverse_Resolution();
 
-    // 自身解算（占用计算资源）
+    // 自身解算
     void Self_Resolution();
+
+    // 输出到底盘动力学
+    void Output_To_Dynamics();
+
+    // 动力学逆解算
+    void Dynamics_Inverse_Resolution();
+
+    void Output_To_Motor();
+
+
+    // 电机动摩擦阻力电流值
+    float Dynamic_Resistance_Wheel_Current[4] = {0.0f,
+                                                 0.0f,
+                                                 0.0f,
+                                                 0.0f};
+                                                 
+    // 电机摩擦阻力连续化的角速度阈值
+    float Wheel_Resistance_Omega_Threshold = 0.0f;
+    // 防单轮超速系数
+    float Wheel_Speed_Limit_Factor = 0.0f;
+
+    // 低电流前馈控制相关参数
+    // 低电流死区设置
+    float Low_Current_Deadzone = 0.0f;
+    float Low_Current_Threshold = 0.0f;        // 低电流阈值
+    float Low_Current_Feedforward[3] = {0.0f}; // 低电流前馈值
 };
 
 const float WHEEL_TO_CORE_DISTANCE = 0.320f;
@@ -130,7 +168,7 @@ const float WHEEL_DIAMETER = 0.1f;
 const float VEL2RAD = 1.0f / (WHEEL_DIAMETER / 2.0f);
 
 // 线速度转角速度 单位m/s
-const float RAD2VEl = 1.0f / (WHEEL_DIAMETER / 2.0f);
+const float RAD2VEl = WHEEL_DIAMETER / 2.0f;
 
 const float SQRT3 = 1.7320508;
 

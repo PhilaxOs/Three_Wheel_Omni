@@ -82,6 +82,8 @@ virtualFolder:
         - path: ../User_dvc/dvc_dwt.h
         - path: ../User_dvc/dvc_motor_dji.cpp
         - path: ../User_dvc/dvc_motor_dji.h
+        - path: ../User_dvc/dvc_nvidiaorin.cpp
+        - path: ../User_dvc/dvc_nvidiaorin.h
       folders: []
     - name: User_alg
       files:
