@@ -6,6 +6,11 @@
 
 #define SPEED_SLOPE
 
+// 轮组方向
+//   [1]
+// [2] [3]
+// 前x左y，逆时针为正方向
+
 /**
  * @brief 底盘冲刺状态枚举
  *
@@ -105,10 +110,10 @@ protected:
     float Wheel_Max_Output = 16384.0f;
 
     // 转动电机目标值
-    float Target_Wheel_Omega[3];
+    float Target_Wheel_Omega[3] = {0.0f};
 
     // 转动电机电流目标值
-    float Target_Wheel_Current[4];
+    float Target_Wheel_Current[3] = {0.0f};
 
     // 底盘控制方法
     Enum_Chassis_Control_Type Chassis_Control_Type = Chassis_Control_Type_DISABLE;
@@ -142,8 +147,7 @@ protected:
 
 
     // 电机动摩擦阻力电流值
-    float Dynamic_Resistance_Wheel_Current[4] = {0.0f,
-                                                 0.0f,
+    float Dynamic_Resistance_Wheel_Current[3] = {0.0f,
                                                  0.0f,
                                                  0.0f};
                                                  
@@ -171,6 +175,8 @@ const float VEL2RAD = 1.0f / (WHEEL_DIAMETER / 2.0f);
 const float RAD2VEl = WHEEL_DIAMETER / 2.0f;
 
 const float SQRT3 = 1.7320508;
+
+const int8_t DIRECTION_SIGN = -1; // 方向调整，正负号，视电机安装方式而定
 
 /**
  * @brief 获取底盘控制方法
