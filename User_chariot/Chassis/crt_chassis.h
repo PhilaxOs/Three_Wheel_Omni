@@ -4,8 +4,6 @@
 #include "dvc_motor_dji.h"
 #include "alg_slope.h"
 
-#define SPEED_SLOPE
-
 // 轮组方向
 //   [1]
 // [2] [3]
@@ -131,9 +129,6 @@ protected:
     // 当前角速度
     float Now_Omega = 0.0f;
 
-    // 运动学逆解算
-    void Kinematics_Inverse_Resolution();
-
     // 自身解算
     void Self_Resolution();
 
@@ -153,14 +148,12 @@ protected:
                                                  
     // 电机摩擦阻力连续化的角速度阈值
     float Wheel_Resistance_Omega_Threshold = 0.0f;
-    // 防单轮超速系数
-    float Wheel_Speed_Limit_Factor = 0.0f;
 
     // 低电流前馈控制相关参数
     // 低电流死区设置
-    float Low_Current_Deadzone = 0.0f;
-    float Low_Current_Threshold = 0.0f;        // 低电流阈值
-    float Low_Current_Feedforward[3] = {0.0f}; // 低电流前馈值
+    float Low_Current_Deadzone = 0.15f;
+    float Low_Current_Threshold = 0.20f;        // 低电流阈值
+    float Low_Current_Feedforward[3] = {0.1f, 0.1f, 0.1f}; // 低电流前馈值，注意这里电流是真实值 -20A ~ 20A
 };
 
 const float WHEEL_TO_CORE_DISTANCE = 0.320f;
@@ -174,10 +167,11 @@ const float VEL2RAD = 1.0f / (WHEEL_DIAMETER / 2.0f);
 // 线速度转角速度 单位m/s
 const float RAD2VEl = WHEEL_DIAMETER / 2.0f;
 
-const float SQRT3 = 1.7320508;
+const float SQRT3 = 1.7320508f;
 
 const int8_t DIRECTION_SIGN = -1; // 方向调整，正负号，视电机安装方式而定
 
+//const int Wheel_Count = 3;
 /**
  * @brief 获取底盘控制方法
  *
