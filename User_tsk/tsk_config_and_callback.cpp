@@ -111,14 +111,14 @@ void Task1ms_TIM5_Callback()
     mod100++;
     if (mod100 >= 100)
     {
-        chariot.TIM_100ms_Alive_PeriodElapsedCallback();
+        chariot.TIM_100ms_Alive_PeriodElapsedCallback(); // DR16存活检测,底盘存活检测
 
         mod100 = 0;
     }
     mod101++;
     if (mod101 >= 101)
     {
-        chariot.TIM_101ms_Alive_PeriodElapsedCallback();
+        chariot.TIM_101ms_Alive_PeriodElapsedCallback(); // orin存活检测
 
         mod101 = 0;
     }

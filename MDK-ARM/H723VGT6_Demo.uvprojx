@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H723xx,ARM_MATH_CM7</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Middlewares/ST/ARM/DSP/Inc;..\User_drv;..\User_alg;..\User_dvc;..\User_ita;..\User_tsk;..\User_chariot\Chassis;..\Middlewares\ST\ARM\DSP\Inc</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Middlewares/ST/ARM/DSP/Inc;../User_drv;../User_alg;../User_dvc;../User_ita;../User_tsk;../User_chariot/Chassis</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
