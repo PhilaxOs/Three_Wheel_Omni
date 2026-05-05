@@ -85,9 +85,9 @@ void Class_Omni_Chassis::Kinematics_Inverse_Resolution()
         float motor3_temp_rad = motor3_temp_linear_vel * VEL2RAD;
 
         // 角速度*减速比  设定目标 直接给到电机输出轴
-        Motor_Wheel[0].Set_Target_Omega(motor1_temp_rad);
-        Motor_Wheel[1].Set_Target_Omega(motor2_temp_rad);
-        Motor_Wheel[2].Set_Target_Omega(motor3_temp_rad);
+        Motor_Wheel[0].Set_Target_Omega(-motor1_temp_rad);
+        Motor_Wheel[1].Set_Target_Omega(-motor2_temp_rad);
+        Motor_Wheel[2].Set_Target_Omega(-motor3_temp_rad);
 
         // test
         //  Motor_Wheel[0].Set_Target_Omega_Radian(temp_test_1);
@@ -114,11 +114,11 @@ void Class_Omni_Chassis::Self_Resolution()
     float W[3] = {0.0f};
     for (int i = 0; i < 3; i++)
     {
-        W[i] = Motor_Wheel[i].Get_Now_Omega();
+        W[i] = - Motor_Wheel[i].Get_Now_Omega();
     }
 
-    temp_velocity_x_now = (- W[1] * 0.5f * SQRT3 + W[2] * 0.5f) * WHEEL_DIAMETER / 2.0f;
-    temp_velocity_y_now = (W[0] - W[1] * 0.5f - W[2] * 0.5f * SQRT3) * WHEEL_DIAMETER / 2.0f;
+    temp_velocity_x_now = (W[2] - W[1]) * SQRT3 * WHEEL_DIAMETER / 6.0f;
+    temp_velocity_y_now = (2.0f * W[0] - W[1] - W[2]) * WHEEL_DIAMETER / 6.0f;
     temp_omega_now = (W[0] + W[1] + W[2]) * WHEEL_DIAMETER / (6.0f * WHEEL_TO_CORE_DISTANCE);
 
     Set_Now_Velocity_X(temp_velocity_x_now);
