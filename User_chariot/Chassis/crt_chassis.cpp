@@ -35,6 +35,79 @@ void Class_Omni_Chassis::Init(float __Velocity_X_Max, float __Velocity_Y_Max, fl
 }
 
 /**
+ * @brief 全向轮运动学逆解算
+ *
+ */
+void Class_Omni_Chassis::Kinematics_Inverse_Resolution()
+{
+    switch (Chassis_Control_Type)
+    {
+    case (Chassis_Control_Type_DISABLE):
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            Motor_Wheel[i].Set_Control_Method(Motor_DJI_Control_Method_OMEGA);
+            Motor_Wheel[i].PID_Angle.Set_Integral_Error(0.0f);
+            Motor_Wheel[i].Set_Target_Omega(0.0f);
+            Motor_Wheel[i].Set_Out(0.0f);
+        }
+    }
+    break;
+
+    case (Chassis_Control_Type_FLLOW):
+    {
+        // 底盘四电机模式配置
+        for (int i = 0; i < 3; i++)
+        {
+            Motor_Wheel[i].Set_Control_Method(Motor_DJI_Control_Method_OMEGA);
+        }
+        // 底盘限速
+        if (Velocity_X_Max != 0)
+            Math_Constrain(&Target_Velocity_X, -Velocity_X_Max, Velocity_X_Max);
+
+        if (Velocity_Y_Max != 0)
+            Math_Constrain(&Target_Velocity_Y, -Velocity_Y_Max, Velocity_Y_Max);
+
+        if (Omega_Max != 0)
+            Math_Constrain(&Target_Omega, -Omega_Max, Omega_Max);
+
+#ifdef SPEED_SLOPE
+        // 速度换算，逆运动学分解
+        float motor1_temp_linear_vel = Slope_Velocity_Y.Get_Out() + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+        float motor2_temp_linear_vel = -Slope_Velocity_X.Get_Out() * 0.5f * SQRT3 - Slope_Velocity_Y.Get_Out() * 0.5f + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+        float motor3_temp_linear_vel = Slope_Velocity_X.Get_Out() * 0.5f * SQRT3 - Slope_Velocity_Y.Get_Out() * 0.5f + Slope_Omega.Get_Out() * WHEEL_TO_CORE_DISTANCE;
+#else
+        // 速度换算，逆运动学分解
+        float motor1_temp_linear_vel = Target_Velocity_X + Target_Omega * WHEEL_TO_CORE_DISTANCE;
+        float motor2_temp_linear_vel = -Target_Velocity_X * 0.5f + Target_Velocity_Y * 0.5f * SQRT3 + Target_Omega * WHEEL_TO_CORE_DISTANCE;
+        float motor3_temp_linear_vel = -Target_Velocity_X * 0.5f - Target_Velocity_Y * 0.5f * SQRT3 + Target_Omega * WHEEL_TO_CORE_DISTANCE;
+#endif
+        // 线速度 cm/s  转角速度  RAD
+        float motor1_temp_rad = motor1_temp_linear_vel * VEL2RAD;
+        float motor2_temp_rad = motor2_temp_linear_vel * VEL2RAD;
+        float motor3_temp_rad = motor3_temp_linear_vel * VEL2RAD;
+
+        // 角速度*减速比  设定目标 直接给到电机输出轴
+        Motor_Wheel[0].Set_Target_Omega(-motor1_temp_rad);
+        Motor_Wheel[1].Set_Target_Omega(-motor2_temp_rad);
+        Motor_Wheel[2].Set_Target_Omega(-motor3_temp_rad);
+
+        // test
+        //  Motor_Wheel[0].Set_Target_Omega_Radian(temp_test_1);
+        //  Motor_Wheel[1].Set_Target_Omega_Radian(temp_test_2);
+        //  Motor_Wheel[2].Set_Target_Omega_Radian(temp_test_3);
+        //  Motor_Wheel[3].Set_Target_Omega_Radian(temp_test_4);
+    }
+    break;
+    }
+    // 各个电机具体PID
+    for (int i = 0; i < 3; i++)
+    {
+        Motor_Wheel[i].TIM_Calculate_PeriodElapsedCallback();
+    }
+}
+
+/**
  * @brief 自身解算
  *
  */
@@ -44,12 +117,12 @@ void Class_Omni_Chassis::Self_Resolution()
     float Now_Wheel_Omega[3] = {0.0f};
     for (int i = 0; i < 3; i++)
     {
-        Now_Wheel_Omega[i] = DIRECTION_SIGN * Motor_Wheel[i].Get_Now_Omega();
+        W[i] = - Motor_Wheel[i].Get_Now_Omega();
     }
 
-    temp_velocity_x_now = (Now_Wheel_Omega[2] - Now_Wheel_Omega[1]) * SQRT3 * WHEEL_DIAMETER / 6.0f;
-    temp_velocity_y_now = (2.0f * Now_Wheel_Omega[0] - Now_Wheel_Omega[1] - Now_Wheel_Omega[2]) * WHEEL_DIAMETER / 6.0f;
-    temp_omega_now = (Now_Wheel_Omega[0] + Now_Wheel_Omega[1] + Now_Wheel_Omega[2]) * WHEEL_DIAMETER / (6.0f * WHEEL_TO_CORE_DISTANCE);
+    temp_velocity_x_now = (W[2] - W[1]) * SQRT3 * WHEEL_DIAMETER / 6.0f;
+    temp_velocity_y_now = (2.0f * W[0] - W[1] - W[2]) * WHEEL_DIAMETER / 6.0f;
+    temp_omega_now = (W[0] + W[1] + W[2]) * WHEEL_DIAMETER / (6.0f * WHEEL_TO_CORE_DISTANCE);
 
     Set_Now_Velocity_X(temp_velocity_x_now);
     Set_Now_Velocity_Y(temp_velocity_y_now);
